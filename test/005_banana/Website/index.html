@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍎 Fruit Freshness Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- 标题栏 -->
+    <header>
+        <h1>🍎 Multi-Fruit Freshness Monitor</h1>
+        <p class="subtitle">Real-time monitoring system for banana, orange, apple, and grape freshness</p>
+    </header>
+
+    <div class="container">
+        <!-- 水果选择标签 -->
+        <div class="fruit-tabs">
+            <button class="fruit-tab active" data-fruit="0" onclick="selectFruit(0)">
+                <span class="emoji">🍌</span>
+                <span class="name">Banana</span>
+            </button>
+            <button class="fruit-tab" data-fruit="1" onclick="selectFruit(1)">
+                <span class="emoji">🍊</span>
+                <span class="name">Orange</span>
+            </button>
+            <button class="fruit-tab" data-fruit="2" onclick="selectFruit(2)">
+                <span class="emoji">🍎</span>
+                <span class="name">Apple</span>
+            </button>
+            <button class="fruit-tab" data-fruit="3" onclick="selectFruit(3)">
+                <span class="emoji">🍇</span>
+                <span class="name">Grape</span>
+            </button>
+        </div>
+
+        <!-- 当前状态卡片 -->
+        <div class="card status-card">
+            <div class="card-header">
+                <h2>
+                    <span id="currentEmoji">🍌</span>
+                    <span id="currentFruit">Banana</span>
+                    Status
+                </h2>
+                <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+            </div>
+            
+            <div class="status-content">
+                <!-- 新鲜度阶段 -->
+                <div class="stage-badge" id="stageBadge">
+                    <span id="stageText">VERY FRESH</span>
+                </div>
+
+                <!-- 核心指标 -->
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Freshness Score</div>
+                        <div class="metric-value" id="scoreValue">95</div>
+                        <div class="metric-unit">/ 100</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Days Left</div>
+                        <div class="metric-value" id="daysValue">6</div>
+                        <div class="metric-unit">days</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Storage Quality</div>
+                        <div class="metric-value" id="storageValue">88</div>
+                        <div class="metric-unit">/ 100</div>
+                    </div>
+                </div>
+
+                <!-- 存储质量进度条 -->
+                <div class="storage-bar-container">
+                    <div class="storage-bar" id="storageBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 环境数据卡片 -->
+        <div class="card environment-card">
+            <h2>📊 Environmental Data</h2>
+            <div class="environment-grid">
+                <div class="env-item">
+                    <div class="env-icon">🌡️</div>
+                    <div class="env-data">
+                        <div class="env-label">Temperature</div>
+                        <div class="env-value" id="tempValue">--</div>
+                    </div>
+                </div>
+                <div class="env-item">
+                    <div class="env-icon">💧</div>
+                    <div class="env-data">
+                        <div class="env-label">Humidity</div>
+                        <div class="env-value" id="humidValue">--</div>
+                    </div>
+                </div>
+                <div class="env-item">
+                    <div class="env-icon">💨</div>
+                    <div class="env-data">
+                        <div class="env-label">Gas Level</div>
+                        <div class="env-value" id="gasValue">--</div>
+                    </div>
+                </div>
+                <div class="env-item">
+                    <div class="env-icon">⏱️</div>
+                    <div class="env-data">
+                        <div class="env-label">Runtime</div>
+                        <div class="env-value" id="runtimeValue">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最佳条件卡片 -->
+        <div class="card optimal-card">
+            <h2>✨ Optimal Storage Conditions</h2>
+            <div class="optimal-content" id="optimalConditions">
+                <div class="optimal-item">
+                    <span class="optimal-label">Temperature:</span>
+                    <span class="optimal-value" id="optimalTemp">18-22°C</span>
+                </div>
+                <div class="optimal-item">
+                    <span class="optimal-label">Humidity:</span>
+                    <span class="optimal-value" id="optimalHumid">60-70%</span>
+                </div>
+                <div class="optimal-tip" id="storageTip">
+                    💡 <span id="tipText">Current conditions are good for storage.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="charts-container">
+            <div class="card chart-card">
+                <h2>📈 Freshness Trend</h2>
+                <canvas id="freshnessChart"></canvas>
+            </div>
+            <div class="card chart-card">
+                <h2>🌡️ Environmental Conditions</h2>
+                <canvas id="environmentChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 数据表格 -->
+        <div class="card table-card">
+            <h2>📋 Recent Readings</h2>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Score</th>
+                            <th>Days</th>
+                            <th>Temp</th>
+                            <th>Humidity</th>
+                            <th>Gas</th>
+                            <th>Stage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="7" class="loading">Loading data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 统计摘要 -->
+        <div class="card summary-card">
+            <h2>📊 Statistics Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Total Readings</div>
+                    <div class="summary-value" id="totalReadings">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Average Score</div>
+                    <div class="summary-value" id="avgScore">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Monitoring Time</div>
+                    <div class="summary-value" id="monitorTime">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Data Points</div>
+                    <div class="summary-value" id="dataPoints">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Multi-Fruit Freshness Monitor v2.0 | Last updated: <span id="lastUpdate">--</span></p>
+        <p>Device: <span id="deviceId">banana1</span> | Region: <span id="region">eu1</span></p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
