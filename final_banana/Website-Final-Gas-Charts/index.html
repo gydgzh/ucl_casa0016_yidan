@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍌 Fruit Freshness Monitor v3.5</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- 标题栏 -->
+    <header>
+        <h1>🍌 Fruit Freshness Monitor v3.5</h1>
+        <p class="subtitle">Real-time monitoring with Q₁₀-based shelf life prediction</p>
+        <p class="subtitle-small">Based on scientific research: Jedermann et al. (2014), Kader (2002)</p>
+    </header>
+
+    <div class="container">
+        <!-- 水果选择标签 -->
+        <div class="fruit-tabs">
+            <button class="fruit-tab active" data-fruit="0" onclick="selectFruit(0)">
+                <span class="emoji">🍌</span>
+                <span class="name">Banana</span>
+            </button>
+            <button class="fruit-tab" data-fruit="1" onclick="selectFruit(1)">
+                <span class="emoji">🍊</span>
+                <span class="name">Orange</span>
+            </button>
+        </div>
+
+        <!-- 当前状态卡片 -->
+        <div class="card status-card">
+            <div class="card-header">
+                <h2>
+                    <span id="currentEmoji">🍌</span>
+                    <span id="currentFruit">Banana</span>
+                    Status
+                </h2>
+                <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+            </div>
+            
+            <div class="status-content">
+                <!-- 新鲜度阶段 -->
+                <div class="stage-badge" id="stageBadge">
+                    <span id="stageText">VERY FRESH</span>
+                </div>
+
+                <!-- 核心指标 -->
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Freshness Score</div>
+                        <div class="metric-value" id="scoreValue">95</div>
+                        <div class="metric-unit">/ 100</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Shelf Life</div>
+                        <div class="metric-value" id="daysValue">6</div>
+                        <div class="metric-unit">days</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Storage Quality</div>
+                        <div class="metric-value" id="storageValue">88</div>
+                        <div class="metric-unit">/ 100</div>
+                    </div>
+                </div>
+
+                <!-- 存储质量进度条 -->
+                <div class="storage-bar-container">
+                    <div class="storage-bar" id="storageBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 环境数据卡片 -->
+        <div class="card environment-card">
+            <h2>📊 Environmental Data</h2>
+            <div class="environment-grid">
+                <div class="env-item">
+                    <div class="env-icon">🌡️</div>
+                    <div class="env-data">
+                        <div class="env-label">Temperature</div>
+                        <div class="env-value" id="tempValue">--</div>
+                        <div class="env-quality" id="tempQuality">--</div>
+                    </div>
+                </div>
+                <div class="env-item">
+                    <div class="env-icon">💧</div>
+                    <div class="env-data">
+                        <div class="env-label">Humidity</div>
+                        <div class="env-value" id="humidValue">--</div>
+                        <div class="env-quality" id="humidQuality">--</div>
+                    </div>
+                </div>
+                <div class="env-item">
+                    <div class="env-icon">💨</div>
+                    <div class="env-data">
+                        <div class="env-label">Gas Raw</div>
+                        <div class="env-value" id="gasRawValue">--</div>
+                        <div class="env-quality" id="gasQuality">--</div>
+                    </div>
+                </div>
+                <div class="env-item">
+                    <div class="env-icon">📈</div>
+                    <div class="env-data">
+                        <div class="env-label">Gas Delta</div>
+                        <div class="env-value" id="gasDeltaValue">--</div>
+                        <div class="env-quality" id="gasDeltaQuality">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🆕 气体检测说明卡片 -->
+        <div class="card gas-sensor-card">
+            <h2>🔬 MQ-135 Gas Sensor Detection</h2>
+            <div class="gas-sensor-content">
+                <p class="sensor-intro">
+                    The MQ-135 sensor detects multiple gases that indicate fruit freshness and environmental quality. 
+                    During fruit ripening and spoilage, these gases are released at varying levels.
+                </p>
+                
+                <div class="gas-types-grid">
+                    <!-- NH3 氨气 -->
+                    <div class="gas-type-item">
+                        <div class="gas-icon">💨</div>
+                        <div class="gas-info">
+                            <h3>NH₃ (Ammonia)</h3>
+                            <div class="gas-source">Source: Protein breakdown</div>
+                            <div class="gas-level">Sensitivity: 10-300 ppm</div>
+                            <div class="gas-indicator spoilage">🔴 Spoilage Indicator</div>
+                        </div>
+                    </div>
+
+                    <!-- NOx 氮氧化物 -->
+                    <div class="gas-type-item">
+                        <div class="gas-icon">🌫️</div>
+                        <div class="gas-info">
+                            <h3>NOₓ (Nitrogen Oxides)</h3>
+                            <div class="gas-source">Source: Oxidation processes</div>
+                            <div class="gas-level">Sensitivity: 10-1000 ppm</div>
+                            <div class="gas-indicator spoilage">🔴 Spoilage Indicator</div>
+                        </div>
+                    </div>
+
+                    <!-- 酒精 -->
+                    <div class="gas-type-item">
+                        <div class="gas-icon">🧪</div>
+                        <div class="gas-info">
+                            <h3>Alcohol (Ethanol)</h3>
+                            <div class="gas-source">Source: Anaerobic fermentation</div>
+                            <div class="gas-level">Sensitivity: 10-300 ppm</div>
+                            <div class="gas-indicator spoilage">🔴 Spoilage Indicator</div>
+                        </div>
+                    </div>
+
+                    <!-- 苯 -->
+                    <div class="gas-type-item">
+                        <div class="gas-icon">⚗️</div>
+                        <div class="gas-info">
+                            <h3>Benzene</h3>
+                            <div class="gas-source">Source: Organic decomposition</div>
+                            <div class="gas-level">Sensitivity: 10-1000 ppm</div>
+                            <div class="gas-indicator spoilage">🔴 Spoilage Indicator</div>
+                        </div>
+                    </div>
+
+                    <!-- CO2 二氧化碳 -->
+                    <div class="gas-type-item">
+                        <div class="gas-icon">🌬️</div>
+                        <div class="gas-info">
+                            <h3>CO₂ (Carbon Dioxide)</h3>
+                            <div class="gas-source">Source: Respiration (normal)</div>
+                            <div class="gas-level">Sensitivity: 10-1000 ppm</div>
+                            <div class="gas-indicator respiration">🟡 Respiration Indicator</div>
+                        </div>
+                    </div>
+
+                    <!-- 烟雾 -->
+                    <div class="gas-type-item">
+                        <div class="gas-icon">💭</div>
+                        <div class="gas-info">
+                            <h3>Smoke</h3>
+                            <div class="gas-source">Source: Environmental pollution</div>
+                            <div class="gas-level">Sensitivity: Various particles</div>
+                            <div class="gas-indicator environment">🟢 Environment Quality</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gas-explanation">
+                    <h3>💡 How It Works</h3>
+                    <div class="explanation-content">
+                        <div class="explanation-item">
+                            <strong>Baseline Calibration:</strong> The sensor measures clean air as a baseline during startup (10 seconds).
+                        </div>
+                        <div class="explanation-item">
+                            <strong>Gas Delta:</strong> Any increase from baseline indicates the presence of detectable gases.
+                        </div>
+                        <div class="explanation-item">
+                            <strong>Freshness Correlation:</strong> Higher gas levels = fruit releasing spoilage compounds = lower freshness score.
+                        </div>
+                        <div class="explanation-item">
+                            <strong>Real-time Monitoring:</strong> Updated every 2 seconds in Environment Mode, on-demand in Fruit Test Mode.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sensor-specs">
+                    <h3>📏 Sensor Specifications</h3>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Model:</span>
+                            <span class="spec-value">MQ-135 Air Quality Sensor</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Detection Range:</span>
+                            <span class="spec-value">10-1000 ppm (various gases)</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Response Time:</span>
+                            <span class="spec-value">&lt; 10 seconds</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Recovery Time:</span>
+                            <span class="spec-value">&lt; 60 seconds</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Operating Temperature:</span>
+                            <span class="spec-value">-10 to 50°C</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">ADC Resolution:</span>
+                            <span class="spec-value">10-bit (0-1023)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sensor-reference">
+                    📚 <strong>References:</strong> MQ-135 Datasheet (Zhengzhou Winsen Electronics), 
+                    "Gas Sensors for Fruit Freshness Detection" (Various Studies)
+                </div>
+            </div>
+        </div>
+
+        <!-- 🆕 气体成分估算图表 -->
+        <div class="card gas-composition-card">
+            <h2>📊 Gas Composition Estimation</h2>
+            <p class="chart-description">
+                Based on current Gas Delta and freshness stage, this chart shows the estimated relative 
+                presence of different gases according to typical fruit spoilage patterns from scientific literature.
+            </p>
+            
+            <div class="composition-charts">
+                <!-- 当前气体成分雷达图 -->
+                <div class="chart-section">
+                    <h3>Current Gas Profile</h3>
+                    <div class="chart-container-composition">
+                        <canvas id="gasCompositionChart"></canvas>
+                    </div>
+                    <div class="current-stage-indicator" id="currentStageIndicator">
+                        <span class="stage-label">Current Stage:</span>
+                        <span class="stage-value" id="compositionStage">VERY FRESH</span>
+                        <span class="gas-delta-label">Gas Delta:</span>
+                        <span class="gas-delta-value" id="compositionGasDelta">+0 ADC</span>
+                    </div>
+                </div>
+
+                <!-- 气体成分历史趋势（堆叠面积图） -->
+                <div class="chart-section">
+                    <h3>Gas Composition History</h3>
+                    <div class="chart-container-history">
+                        <canvas id="gasHistoryChart"></canvas>
+                    </div>
+                    <div class="history-legend">
+                        <div class="legend-item"><span class="legend-color nh3"></span> NH₃</div>
+                        <div class="legend-item"><span class="legend-color alcohol"></span> Alcohol</div>
+                        <div class="legend-item"><span class="legend-color co2"></span> CO₂</div>
+                        <div class="legend-item"><span class="legend-color nox"></span> NOₓ</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="composition-explanation">
+                <h3>💡 Estimation Method</h3>
+                <div class="explanation-grid">
+                    <div class="method-item">
+                        <strong>Stage-Based Pattern:</strong>
+                        <ul>
+                            <li><strong>Very Fresh:</strong> Low CO₂ (normal respiration only)</li>
+                            <li><strong>Good:</strong> Moderate CO₂, trace alcohol</li>
+                            <li><strong>Eat Today:</strong> Elevated alcohol, NH₃ begins</li>
+                            <li><strong>Spoiled:</strong> High NH₃, NOₓ, strong fermentation</li>
+                        </ul>
+                    </div>
+                    <div class="method-item">
+                        <strong>Gas Delta Scaling:</strong>
+                        <p>Higher Gas Delta values increase the estimated concentration of all spoilage indicators proportionally, while maintaining stage-specific patterns.</p>
+                    </div>
+                    <div class="method-item">
+                        <strong>Scientific Basis:</strong>
+                        <p>Patterns based on research: "Volatile Organic Compounds in Fruit Ripening" (Klee & Giovannoni, 2011), "Ethylene and Fruit Ripening" (Barry & Giovannoni, 2007)</p>
+                    </div>
+                </div>
+                <div class="estimation-note">
+                    ⚠️ <strong>Note:</strong> This is an <em>estimation</em> based on typical patterns. MQ-135 measures total gas concentration, 
+                    not individual gases. For precise gas composition analysis, specialized sensors for each gas type would be required.
+                </div>
+            </div>
+        </div>
+
+        <!-- Q10科学模型卡片 -->
+        <div class="card science-card">
+            <h2>🎓 Q₁₀ Temperature Model</h2>
+            <div class="science-content">
+                <div class="science-formula">
+                    <strong>Shelf Life =</strong> Base Days × Humidity Factor × Gas Factor / Temperature Factor
+                </div>
+                <div class="science-details" id="scienceDetails">
+                    <div class="science-item">
+                        <span class="label">Base Shelf Life (20°C):</span>
+                        <span class="value" id="baseShelfLife">7 days</span>
+                    </div>
+                    <div class="science-item">
+                        <span class="label">Temperature Factor (Q₁₀=2.5):</span>
+                        <span class="value" id="tempFactor">1.00</span>
+                    </div>
+                    <div class="science-item">
+                        <span class="label">Humidity Factor:</span>
+                        <span class="value" id="humidFactor">1.00</span>
+                    </div>
+                    <div class="science-item">
+                        <span class="label">Gas Quality Factor:</span>
+                        <span class="value" id="gasFactor">1.00</span>
+                    </div>
+                    <div class="science-result">
+                        <span class="label">Calculated Shelf Life:</span>
+                        <span class="value" id="calculatedDays">7.0 days</span>
+                    </div>
+                </div>
+                <div class="science-reference">
+                    📚 Reference: Jedermann et al. (2014), Kader (2002), Bangladesh Agricultural University (2020)
+                </div>
+            </div>
+        </div>
+
+        <!-- 最佳条件卡片 -->
+        <div class="card optimal-card">
+            <h2>✨ Optimal Storage Conditions</h2>
+            <div class="optimal-content" id="optimalConditions">
+                <div class="optimal-comparison">
+                    <div class="comparison-item">
+                        <span class="label">Temperature:</span>
+                        <span class="current" id="currentTempComp">--</span>
+                        <span class="vs">vs</span>
+                        <span class="optimal" id="optimalTemp">18-22°C</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="label">Humidity:</span>
+                        <span class="current" id="currentHumidComp">--</span>
+                        <span class="vs">vs</span>
+                        <span class="optimal" id="optimalHumid">50-60%</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="label">Gas Delta:</span>
+                        <span class="current" id="currentGasComp">--</span>
+                        <span class="vs">vs</span>
+                        <span class="optimal">< 10 ADC</span>
+                    </div>
+                </div>
+                <div class="optimal-tip" id="storageTip">
+                    💡 <span id="tipText">Analyzing conditions...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="charts-container">
+            <div class="card chart-card">
+                <h2>📈 Freshness & Shelf Life Trend</h2>
+                <canvas id="freshnessChart"></canvas>
+            </div>
+            <div class="card chart-card">
+                <h2>🌡️ Environmental Conditions</h2>
+                <canvas id="environmentChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Gas Analysis Chart -->
+        <div class="card chart-card">
+            <h2>💨 Gas Analysis (Raw & Delta)</h2>
+            <canvas id="gasChart"></canvas>
+        </div>
+
+        <!-- 数据表格 -->
+        <div class="card table-card">
+            <h2>📋 Recent Readings</h2>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Score</th>
+                            <th>Shelf Life</th>
+                            <th>Temp (°C)</th>
+                            <th>Humid (%)</th>
+                            <th>Gas Raw</th>
+                            <th>Gas Δ</th>
+                            <th>Stage</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="8" class="loading">Loading data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 统计摘要 -->
+        <div class="card summary-card">
+            <h2>📊 Statistics Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Total Readings</div>
+                    <div class="summary-value" id="totalReadings">0</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Average Score</div>
+                    <div class="summary-value" id="avgScore">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Average Shelf Life</div>
+                    <div class="summary-value" id="avgShelfLife">--</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Data Points</div>
+                    <div class="summary-value" id="dataPoints">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 科学依据说明 -->
+        <div class="card reference-card">
+            <h2>📚 Scientific References</h2>
+            <div class="references">
+                <div class="ref-item">
+                    <strong>1. Q₁₀ Temperature Model</strong>
+                    <p>Jedermann, R., et al. (2014). "Remote quality monitoring in the banana chain." 
+                    Royal Society Publishing. PMC4006168.</p>
+                    <p class="ref-desc">Provides the Q₁₀ model showing green-life period decreases exponentially 
+                    with increasing temperature above 13°C.</p>
+                </div>
+                <div class="ref-item">
+                    <strong>2. Postharvest Technology</strong>
+                    <p>Kader, A.A. (2002). "Postharvest Technology of Horticultural Crops." 
+                    UC ANR Publication 3311.</p>
+                    <p class="ref-desc">Establishes Q₁₀ theoretical basis and optimal storage conditions.</p>
+                </div>
+                <div class="ref-item">
+                    <strong>3. Temperature Storage Effects</strong>
+                    <p>Bangladesh Agricultural University (2020). "Effects of low temperature storage 
+                    on the extension of shelf life of banana."</p>
+                    <p class="ref-desc">Empirical data: Room temperature (25-30°C) = 8 days, 
+                    Cold storage (10°C) = 35 days.</p>
+                </div>
+                <div class="ref-item">
+                    <strong>4. Commercial Standards</strong>
+                    <p>Semco Ice (2025). "Banana Storage and Cooling Tips."</p>
+                    <p class="ref-desc">Tree-ripened: 7-10 days, Green fruit cold storage: 3-4 weeks, 
+                    Controlled atmosphere: up to 6 weeks.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Fruit Freshness Monitor v3.5 | Q₁₀-Based Prediction | Last updated: <span id="lastUpdate">--</span></p>
+        <p>Device: <span id="deviceId">banana2</span> | Region: <span id="region">eu2</span></p>
+        <p class="footer-small">© 2025 | Based on peer-reviewed research</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
