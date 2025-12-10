@@ -14,7 +14,8 @@ The system supports multiple fruit types (e.g., banana and orange) and includes 
 
 1. **Catbus Fruit Detector**
 
-   ![image-20251210142315668](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210142315668.png)
+<img width="3072" height="2582" alt="主题" src="https://github.com/user-attachments/assets/ad4e9826-1072-49ba-8dc8-df02dc59a206" />
+
 
 2. **Web Monitoring System**
 
