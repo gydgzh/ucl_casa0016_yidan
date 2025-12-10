@@ -45,7 +45,8 @@ When powered on, the device:
 
 3. Enters Environment Monitoring Mode
 
-   ![未命名作品 4](/Users/yimisheng/Downloads/未命名作品 4.jpg)
+![未命名作品 4](https://github.com/user-attachments/assets/df3eb18c-4fc9-4ffc-b9f4-09a92e8afa31)
+
 
 ------
 
@@ -58,10 +59,9 @@ The device continuously:
 - Estimates **how many days fruit can stay fresh**
 
 - Computes a **storage quality score** (fridges usually score higher than rooms)
+ <img width="820" height="254" alt="image" src="https://github.com/user-attachments/assets/bcdf3428-ae31-49b6-b1a6-a5a4de2de06b" />
+![IMG_0827](https://github.com/user-attachments/assets/b129566c-d23d-438f-9ac7-2ebd10a62fe7)
 
-  ![image-20251210142803127](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210142803127.png)
-
-  ![IMG_0827](/Users/yimisheng/Downloads/IMG_0827.jpg)
 
 ### 🟡 Yellow Button
 
@@ -85,17 +85,17 @@ Used to check the freshness of **one single fruit** of the selected type.
 ### Display Logic
 
 - **Green screen** → No fruit nearby or the fruit is healthy
+<img width="1090" height="720" alt="image" src="https://github.com/user-attachments/assets/ac088308-32df-4f17-94dd-32e14328cb2a" />
 
-  ![image-20251210142348108](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210142348108.png)
-
+  
 - **Red screen** → Bad fruit detected based on gas change
+<img width="1073" height="720" alt="image" src="https://github.com/user-attachments/assets/a41a4475-908e-4a24-852b-cc6be188774a" />
 
-  ![image-20251210142358478](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210142358478.png)
 
 Press the **yellow button** again to return to Environment Monitoring Mode.
  The device will recalibrate the gas sensor before continuing.
 
-![image-20251210142433597](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210142433597.png)
+<img width="1156" height="720" alt="image" src="https://github.com/user-attachments/assets/13266d6c-0dab-4bbb-abb4-05d5397f9a15" />
 
 ------
 
@@ -125,9 +125,9 @@ Shows:
 
 - Predicted shelf life
 
-  ![image-20251210143021752](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210143021752.png)
+<img width="855" height="633" alt="image" src="https://github.com/user-attachments/assets/aeb97ce2-0346-452c-9318-17b1132d1a0b" />
 
-![image-20251210143209557](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210143209557.png)
+<img width="851" height="442" alt="image" src="https://github.com/user-attachments/assets/4ec1585b-6fb2-466a-8034-842862c09e10" />
 
 ### **2. Gas Composition Estimation**
 
@@ -137,8 +137,7 @@ Explains gases related to spoilage (NH₃, NOₓ, alcohol, benzene, CO₂, smoke
 - Radar chart of estimated gas composition
 
 - Gas history timeline
-
-  ![image-20251210143116996](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210143116996.png)
+ <img width="816" height="561" alt="image" src="https://github.com/user-attachments/assets/865482f0-f4cc-466b-be65-8337a65d0c5d" />
 
 ### **3. Historical Data Line Chart**
 
@@ -151,12 +150,14 @@ Visualizes:
 - Gas data
 
 - Freshness score trends
+ <img width="856" height="390" alt="image" src="https://github.com/user-attachments/assets/1125e03c-bc0d-42f4-8b32-a329382a503a" />
+ <img width="853" height="378" alt="image" src="https://github.com/user-attachments/assets/c1e2f696-aec0-4ff4-9e5b-7983933ce2f5" />
 
-  ![image-20251210143320470](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210143320470.png)
 
 Helps users observe long-term patterns of fruit ripening and spoilage.
 
-![image-20251210143349955](/Users/yimisheng/Library/Application Support/typora-user-images/image-20251210143349955.png)
+<img width="854" height="487" alt="image" src="https://github.com/user-attachments/assets/99b63f58-34dc-4c82-8b7f-83806ca4c48a" />
+
 
 ------
 
