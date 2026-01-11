@@ -33,6 +33,9 @@ A physical LoRa-enabled device used for fruit and environment monitoring.
 - Two buttons – yellow (fruit type) and green (fruit testing)
 - MKR WAN 1310 – LoRaWAN communication
 
+  ![IMG_6391](https://github.com/user-attachments/assets/a7c7b626-8b2f-4349-a3fe-43a51c2a18d5)
+
+
 ------
 
 ## Startup Process
